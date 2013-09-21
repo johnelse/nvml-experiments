@@ -1,7 +1,8 @@
 PROGRAM=get_device_temperatures
 
 $(PROGRAM):
-	gcc -lnvidia-ml get_device_temperatures.c -o $@
+	gcc -c -o $(PROGRAM).o $(PROGRAM).c
+	gcc $(PROGRAM).o -lnvidia-ml -o $(PROGRAM)
 
 clean:
-	rm -f $(PROGRAM)
+	rm -f $(PROGRAM) $(PROGRAM).o
