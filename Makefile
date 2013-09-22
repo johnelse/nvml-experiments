@@ -1,4 +1,4 @@
-PROGRAM=get_device_temperatures
+PROGRAM=get_device_info
 
 $(PROGRAM):
 	gcc -c -o $(PROGRAM).o $(PROGRAM).c
