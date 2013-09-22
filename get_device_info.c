@@ -4,7 +4,7 @@
 
 int main(int argc, char** argv) {
     nvmlReturn_t result;
-    unsigned int device_count, device_index, temp;
+    unsigned int device_count, device_index, fan_speed, temp;
     nvmlDevice_t device;
 
     result = nvmlInit();
@@ -27,6 +27,13 @@ int main(int argc, char** argv) {
             printf("Failed to get device handle: %s\n", nvmlErrorString(result));
             goto Error;
         };
+
+        result = nvmlDeviceGetFanSpeed(device, &fan_speed);
+        if (NVML_SUCCESS != result) {
+            printf("Failed to get device fan speed: %s\n", nvmlErrorString(result));
+            goto Error;
+        };
+        printf("device %u has fan speed %u\n", device_index, fan_speed);
 
         result = nvmlDeviceGetTemperature(device, NVML_TEMPERATURE_GPU, &temp);
         if(NVML_SUCCESS != result) {
