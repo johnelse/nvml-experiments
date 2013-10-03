@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
             // Get the device's utilization.
             result = nvmlDeviceGetUtilizationRates(device, &utilization);
             if(NVML_SUCCESS == result) {
-                printf("Device utilization: gpu = %u, memory = %u", utilization.gpu, utilization.memory);
+                printf("Device utilization: gpu = %u, memory = %u\n", utilization.gpu, utilization.memory);
             }
             else {
                 printf("Failed to get device utilization: %s\n", nvmlErrorString(result));
