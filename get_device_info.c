@@ -4,6 +4,7 @@
 
 int main(int argc, char** argv) {
     nvmlReturn_t result;
+    nvmlUtilization_t utilization;
     unsigned int device_count, device_index, temp;
     nvmlDevice_t device;
 
@@ -28,6 +29,15 @@ int main(int argc, char** argv) {
         // Get the device's handle.
         result = nvmlDeviceGetHandleByIndex(device_index, &device);
         if(NVML_SUCCESS == result) {
+            // Get the device's utilization.
+            result = nvmlDeviceGetUtilizationRates(device, &utilization);
+            if(NVML_SUCCESS == result) {
+                printf("Device utilization: gpu = %u, memory = %u", utilization.gpu, utilization.memory);
+            }
+            else {
+                printf("Failed to get device utilization: %s\n", nvmlErrorString(result));
+            };
+
             // Get the device's temperature.
             result = nvmlDeviceGetTemperature(device, NVML_TEMPERATURE_GPU, &temp);
             if(NVML_SUCCESS == result) {
