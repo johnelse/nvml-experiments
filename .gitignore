@@ -1,1 +1,2 @@
-get_device_temperatures
+get_device_info
+*.o
