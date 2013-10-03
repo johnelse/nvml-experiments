@@ -8,7 +8,7 @@ int main(int argc, char** argv) {
     nvmlReturn_t result;
     nvmlUtilization_t utilization;
     char device_name[DEVICE_NAME_LENGTH];
-    unsigned int device_count, device_index, temp, power_usage;
+    unsigned int device_count, device_index, fan_speed, temp, power_usage;
     nvmlDevice_t device;
     nvmlEnableState_t current, pending;
 
@@ -67,6 +67,15 @@ int main(int argc, char** argv) {
             {
                 printf("Failed to get ECC mode: %s\n", nvmlErrorString(result));
             }
+
+            // Get the device's fan speed.
+            result = nvmlDeviceGetFanSpeed(device, &fan_speed);
+            if(NVML_SUCCESS == result) {
+                printf("Device has fan speed %u%%\n", fan_speed);
+            }
+            else {
+                printf("Failed to get device fan speed: %s\n", nvmlErrorString(result));
+            };
 
             // Get the device's temperature.
             result = nvmlDeviceGetTemperature(device, NVML_TEMPERATURE_GPU, &temp);
