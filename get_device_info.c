@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
             // Get the device's temperature.
             result = nvmlDeviceGetTemperature(device, NVML_TEMPERATURE_GPU, &temp);
             if(NVML_SUCCESS == result) {
-                printf("Device has temperature %uC\n", device_index, temp);
+                printf("Device has temperature %uC\n", temp);
             }
             else {
                 printf("Failed to get device temperature: %s\n", nvmlErrorString(result));
