@@ -5,7 +5,7 @@
 int main(int argc, char** argv) {
     nvmlReturn_t result;
     nvmlUtilization_t utilization;
-    unsigned int device_count, device_index, temp;
+    unsigned int device_count, device_index, temp, power_usage;
     nvmlDevice_t device;
     nvmlEnableState_t current, pending;
 
@@ -63,6 +63,15 @@ int main(int argc, char** argv) {
             }
             else {
                 printf("Failed to get device temperature: %s\n", nvmlErrorString(result));
+            };
+
+            // Get the device's power usage.
+            result = nvmlDeviceGetPowerUsage(device, &power_usage);
+            if(NVML_SUCCESS == result) {
+                printf("Device has power usage %umW\n", power_usage);
+            }
+            else {
+                printf("Failed to get device power usage: %s\n", nvmlErrorString(result));
             };
         }
         else {
