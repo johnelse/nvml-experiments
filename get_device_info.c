@@ -2,9 +2,12 @@
 #include <stdlib.h>
 #include <nvml.h>
 
+unsigned int DEVICE_NAME_LENGTH = 64;
+
 int main(int argc, char** argv) {
     nvmlReturn_t result;
     nvmlUtilization_t utilization;
+    char device_name[DEVICE_NAME_LENGTH];
     unsigned int device_count, device_index, temp, power_usage;
     nvmlDevice_t device;
     nvmlEnableState_t current, pending;
@@ -32,6 +35,15 @@ int main(int argc, char** argv) {
         // Get the device's handle.
         result = nvmlDeviceGetHandleByIndex(device_index, &device);
         if(NVML_SUCCESS == result) {
+            // Get the device's name.
+            result = nvmlDeviceGetName(device, device_name, DEVICE_NAME_LENGTH);
+            if(NVML_SUCCESS == result) {
+                printf("Device name: %s\n", device_name);
+            }
+            else {
+                printf("Failed to get device name: %s\n", nvmlErrorString(result));
+            };
+
             // Get the device's utilization.
             result = nvmlDeviceGetUtilizationRates(device, &utilization);
             if(NVML_SUCCESS == result) {
