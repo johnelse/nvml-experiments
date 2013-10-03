@@ -7,6 +7,7 @@ int main(int argc, char** argv) {
     nvmlUtilization_t utilization;
     unsigned int device_count, device_index, temp;
     nvmlDevice_t device;
+    nvmlEnableState_t current, pending;
 
     // Initialise the library.
     result = nvmlInit();
@@ -37,6 +38,21 @@ int main(int argc, char** argv) {
             else {
                 printf("Failed to get device utilization: %s\n", nvmlErrorString(result));
             };
+
+            // Get the current and pending ECC modes.
+            result = nvmlDeviceGetEccMode(device, &current, &pending);
+            if(NVML_SUCCESS == result) {
+                if(NVML_FEATURE_ENABLED == current) {
+                    printf("Device has ECC enabled\n");
+                }
+                else {
+                    printf("Device has ECC disabled\n");
+                }
+            }
+            else
+            {
+                printf("Failed to get ECC mode: %s\n", nvmlErrorString(result));
+            }
 
             // Get the device's temperature.
             result = nvmlDeviceGetTemperature(device, NVML_TEMPERATURE_GPU, &temp);
