@@ -27,6 +27,8 @@ int main(int argc, char** argv) {
 
     // Iterate through the devices.
     for(device_index = 0; device_index < device_count; device_index++) {
+        printf("---------- Device %u ----------\n", device_index);
+
         // Get the device's handle.
         result = nvmlDeviceGetHandleByIndex(device_index, &device);
         if(NVML_SUCCESS == result) {
@@ -57,14 +59,14 @@ int main(int argc, char** argv) {
             // Get the device's temperature.
             result = nvmlDeviceGetTemperature(device, NVML_TEMPERATURE_GPU, &temp);
             if(NVML_SUCCESS == result) {
-                printf("device %u has temperature %uC\n", device_index, temp);
+                printf("Device has temperature %uC\n", device_index, temp);
             }
             else {
                 printf("Failed to get device temperature: %s\n", nvmlErrorString(result));
             };
         }
         else {
-            printf("Failed to get handle for device %u: %s\n", device_index, nvmlErrorString(result));
+            printf("Failed to get handle for device: %s\n", nvmlErrorString(result));
         };
     };
 
