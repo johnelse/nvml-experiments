@@ -23,24 +23,26 @@ int main(int argc, char** argv) {
 
     for(device_index = 0; device_index < device_count; device_index++) {
         result = nvmlDeviceGetHandleByIndex(device_index, &device);
-        if(NVML_SUCCESS != result) {
-            printf("Failed to get device handle: %s\n", nvmlErrorString(result));
-            goto Error;
-        };
+        if(NVML_SUCCESS == result) {
+            result = nvmlDeviceGetFanSpeed(device, &fan_speed);
+            if (NVML_SUCCESS == result) {
+                printf("device %u has fan speed %u\n", device_index, fan_speed);
+            }
+            else {
+                printf("Failed to get device fan speed: %s\n", nvmlErrorString(result));
+            };
 
-        result = nvmlDeviceGetFanSpeed(device, &fan_speed);
-        if (NVML_SUCCESS != result) {
-            printf("Failed to get device fan speed: %s\n", nvmlErrorString(result));
-            goto Error;
+            result = nvmlDeviceGetTemperature(device, NVML_TEMPERATURE_GPU, &temp);
+            if(NVML_SUCCESS == result) {
+                printf("device %u has temperature %uC\n", device_index, temp);
+            }
+            else {
+                printf("Failed to get device temperature: %s\n", nvmlErrorString(result));
+            };
+        }
+        else {
+            printf("Failed to get handle for device %u: %s\n", device_index, nvmlErrorString(result));
         };
-        printf("device %u has fan speed %u\n", device_index, fan_speed);
-
-        result = nvmlDeviceGetTemperature(device, NVML_TEMPERATURE_GPU, &temp);
-        if(NVML_SUCCESS != result) {
-            printf("Failed to get device temperature: %s\n", nvmlErrorString(result));
-            goto Error;
-        };
-        printf("device %u has temperature %uC\n", device_index, temp);
     };
 
     result = nvmlShutdown();
