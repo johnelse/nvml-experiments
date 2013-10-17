@@ -90,5 +90,7 @@ int main(int argv, char** argc) {
     }
     printf("Library closed\n");
 
+    printf("Everything seems to be working OK :-)\n");
+
     return 0;
 }
