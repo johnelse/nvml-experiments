@@ -1,3 +1,7 @@
 basic_dlopen/basic_dlopen
 get_device_info/get_device_info
+ml_dlopen/ml_dlopen
+
+*.cmi
+*.cmx
 *.o
