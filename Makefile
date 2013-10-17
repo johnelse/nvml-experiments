@@ -8,7 +8,7 @@ all:
 clean:
 	$(foreach COMPONENT, $(COMPONENTS), $(MAKE) -C $(COMPONENT) clean;)
 
-test:
+test: all
 	@$(foreach COMPONENT, $(COMPONENTS), \
 		echo -e "---------------------------------------------------" && \
 		echo -e "Running program: $(COMPONENT)" && \
