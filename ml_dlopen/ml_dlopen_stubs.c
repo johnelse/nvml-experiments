@@ -27,13 +27,16 @@ CAMLprim value stub_nvml_open(value unit)
 
     handle = dlopen("libnvidia-ml.so.1", RTLD_LAZY);
     if (!handle) {
-        caml_failwith(dlerror());
+        goto Error;
     }
-
     interface->handle = handle;
     ml_interface = (value)interface;
 
     CAMLreturn(ml_interface);
+
+Error:
+    free(interface);
+    caml_failwith(dlerror());
 }
 
 CAMLprim value stub_nvml_close(value ml_interface)
