@@ -1,4 +1,4 @@
-COMPONENTS=basic_dlopen get_device_info
+COMPONENTS=basic_dlopen get_device_info ml_dlopen
 
 .PHONY: all clean test
 
