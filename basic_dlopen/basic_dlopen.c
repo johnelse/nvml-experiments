@@ -5,6 +5,20 @@
 
 #include <nvml.h>
 
+/**
+ * - Load the NVML library via dlopen.
+ * - Look up some symbols:
+ *   - nvmlErrorString
+ *   - nvmlInit
+ *   - nvmlShutdown
+ *   - nvmlSystemGetDriverVersion
+ * - Using these symbols:
+ *   - Initialise the library.
+ *   - Get the driver version.
+ *   - Shut down the library.
+ * - Finally, unload the library with dlclose.
+ */
+
 int main(int argv, char** argc) {
     void *nvml_handle;
     int err;
