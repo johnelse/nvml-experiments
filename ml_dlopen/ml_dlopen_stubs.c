@@ -73,3 +73,35 @@ CAMLprim value stub_nvml_close(value ml_interface)
 
     CAMLreturn(Val_unit);
 }
+
+void check_error(nvmlInterface* interface, nvmlReturn_t error) {
+    if (NVML_SUCCESS != error) {
+        caml_failwith(interface->errorString(error));
+    }
+}
+
+CAMLprim value stub_nvml_init(value ml_interface)
+{
+    CAMLparam1(ml_interface);
+    nvmlReturn_t error;
+    nvmlInterface* interface;
+
+    interface = (nvmlInterface*)ml_interface;
+    error = interface->init();
+    check_error(interface, error);
+
+    CAMLreturn(Val_unit);
+}
+
+CAMLprim value stub_nvml_shutdown(value ml_interface)
+{
+    CAMLparam1(ml_interface);
+    nvmlReturn_t error;
+    nvmlInterface* interface;
+
+    interface = (nvmlInterface*)ml_interface;
+    error = interface->shutdown();
+    check_error(interface, error);
+
+    CAMLreturn(Val_unit);
+}
