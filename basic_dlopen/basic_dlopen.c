@@ -14,6 +14,9 @@ int main(int argv, char** argc) {
     char* (*_nvmlErrorString)(nvmlReturn_t);
     nvmlReturn_t (*_nvmlInit)(void);
     nvmlReturn_t (*_nvmlShutdown)(void);
+    nvmlReturn_t (*_nvmlSystemGetDriverVersion)(char*, unsigned int);
+
+    char driver_version[NVML_SYSTEM_NVML_VERSION_BUFFER_SIZE];
 
     // Open a handle to the shared library.
     nvml_handle = dlopen("libnvidia-ml.so.1", RTLD_LAZY);
@@ -45,6 +48,14 @@ int main(int argv, char** argc) {
     }
     printf("Found nvmlShutdown\n");
 
+    _nvmlSystemGetDriverVersion =
+        dlsym(nvml_handle, "nvmlSystemGetDriverVersion");
+    if((error = dlerror()) != NULL) {
+        fprintf(stderr, "%s\n", error);
+        exit(1);
+    }
+    printf("Found nvmlSystemGetDriverVersion\n");
+
     // Initialise the library.
     nvml_err = _nvmlInit();
     if (NVML_SUCCESS != nvml_err) {
@@ -52,6 +63,16 @@ int main(int argv, char** argc) {
         exit(1);
     }
     printf("Initialised NVML\n");
+
+    // Query the driver version.
+    nvml_err = _nvmlSystemGetDriverVersion(driver_version,
+        NVML_SYSTEM_NVML_VERSION_BUFFER_SIZE);
+    if (NVML_SUCCESS != nvml_err) {
+        fprintf(stderr, "couldn't get driver version: %s\n",
+                _nvmlErrorString(nvml_err));
+        exit(1);
+    }
+    printf("Got driver version: %s\n", driver_version);
 
     // Shutdown the library.
     nvml_err = _nvmlShutdown();
