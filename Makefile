@@ -1,4 +1,4 @@
-COMPONENTS=get_device_info
+COMPONENTS=basic_dlopen get_device_info
 
 .PHONY: all clean
 
