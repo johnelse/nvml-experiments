@@ -2,6 +2,18 @@
 #include <stdlib.h>
 #include <nvml.h>
 
+/**
+ * Iterate through all the devices on the system which are recognised by NVML.
+ * For each device, print out:
+ * - The device's index.
+ * - The device's name.
+ * - The devices's utilisation, if supported.
+ * - The device's ECC mode, if supported.
+ * - The device's fan speed, if supported.
+ * - The device's temperature.
+ * - The device's power usage, if supported.
+ */
+
 const unsigned int MAX_DEVICE_NAME_LENGTH = 64;
 
 int main(int argc, char** argv) {
