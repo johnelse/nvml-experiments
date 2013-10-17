@@ -10,7 +10,7 @@ clean:
 
 test:
 	@$(foreach COMPONENT, $(COMPONENTS), \
-		echo -e "---------------------------------------------------"; \
-		echo -e "Running program: $(COMPONENT)"; \
-		echo -e "---------------------------------------------------"; \
-		./$(COMPONENT)/$(COMPONENT);)
+		echo -e "---------------------------------------------------" && \
+		echo -e "Running program: $(COMPONENT)" && \
+		echo -e "---------------------------------------------------" && \
+		./$(COMPONENT)/$(COMPONENT) &&) :
