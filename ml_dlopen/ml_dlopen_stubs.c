@@ -17,6 +17,7 @@ typedef struct nvmlInterface {
     char* (*errorString)(nvmlReturn_t);
     nvmlReturn_t (*init)(void);
     nvmlReturn_t (*shutdown)(void);
+    nvmlReturn_t (*deviceGetCount)(unsigned int*);
 } nvmlInterface;
 
 CAMLprim value stub_nvml_open(value unit)
@@ -51,6 +52,12 @@ CAMLprim value stub_nvml_open(value unit)
     // Load nvmlShutdown.
     interface->shutdown = dlsym(handle, "nvmlShutdown");
     if (!interface->shutdown) {
+        goto Error;
+    }
+
+    // Load nvmlDeviceGetCount.
+    interface->deviceGetCount = dlsym(handle, "nvmlDeviceGetCount");
+    if (!interface->deviceGetCount) {
         goto Error;
     }
 
@@ -104,4 +111,17 @@ CAMLprim value stub_nvml_shutdown(value ml_interface)
     check_error(interface, error);
 
     CAMLreturn(Val_unit);
+}
+
+CAMLprim value stub_nvml_device_get_count(value ml_interface) {
+    CAMLparam1(ml_interface);
+    nvmlReturn_t error;
+    nvmlInterface* interface;
+    unsigned int count;
+
+    interface = (nvmlInterface*)ml_interface;
+    error = interface->deviceGetCount(&count);
+    check_error(interface, error);
+
+    CAMLreturn(Val_int(count));
 }

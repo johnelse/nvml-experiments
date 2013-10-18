@@ -6,6 +6,8 @@ module Nvml = struct
 
 	external init: interface -> unit = "stub_nvml_init"
 	external shutdown: interface -> unit = "stub_nvml_shutdown"
+
+	external device_get_count: interface -> int = "stub_nvml_device_get_count"
 end
 
 let () =
