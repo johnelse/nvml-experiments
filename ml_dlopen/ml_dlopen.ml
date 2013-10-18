@@ -3,6 +3,11 @@ module Nvml = struct
 
 	type device
 
+	type utilization = {
+		gpu: int;
+		memory: int;
+	}
+
 	external library_open: unit -> interface = "stub_nvml_open"
 	external library_close: interface -> unit = "stub_nvml_close"
 
@@ -16,6 +21,8 @@ module Nvml = struct
 		"stub_nvml_device_get_temperature"
 	external device_get_power_usage: interface -> device -> int =
 		"stub_nvml_device_get_power_usage"
+	external device_get_utilization_rates: interface -> device -> utilization =
+		"stub_nvml_device_get_utilization_rates"
 end
 
 let () =

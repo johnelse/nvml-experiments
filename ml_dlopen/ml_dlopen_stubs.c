@@ -22,6 +22,7 @@ typedef struct nvmlInterface {
     nvmlReturn_t (*deviceGetTemperature)
         (nvmlDevice_t, nvmlTemperatureSensors_t, unsigned int*);
     nvmlReturn_t (*deviceGetPowerUsage)(nvmlDevice_t, unsigned int*);
+    nvmlReturn_t (*deviceGetUtilizationRates)(nvmlDevice_t, nvmlUtilization_t*);
 } nvmlInterface;
 
 CAMLprim value stub_nvml_open(value unit) {
@@ -82,6 +83,13 @@ CAMLprim value stub_nvml_open(value unit) {
     interface->deviceGetPowerUsage =
         dlsym(handle, "nvmlDeviceGetPowerUsage");
     if(!interface->deviceGetPowerUsage) {
+        goto Error;
+    }
+
+    // Load nvmlDeviceGetUtilizationRates.
+    interface->deviceGetUtilizationRates =
+        dlsym(handle, "nvmlDeviceGetUtilizationRates");
+    if(!interface->deviceGetUtilizationRates) {
         goto Error;
     }
 
@@ -198,4 +206,26 @@ CAMLprim value stub_nvml_device_get_power_usage(
     check_error(interface, error);
 
     CAMLreturn(Val_int(power_usage));
+}
+
+CAMLprim value stub_nvml_device_get_utilization_rates(
+        value ml_interface,
+        value ml_device) {
+    CAMLparam2(ml_interface, ml_device);
+    CAMLlocal1(ml_utilization);
+    nvmlReturn_t error;
+    nvmlInterface* interface;
+    nvmlDevice_t device;
+    nvmlUtilization_t utilization;
+
+    interface = (nvmlInterface*)ml_interface;
+    device = *(nvmlDevice_t*)ml_device;
+    error = interface->deviceGetUtilizationRates(device, &utilization);
+    check_error(interface, error);
+
+    ml_utilization = caml_alloc(2, 0);
+    Store_field(ml_utilization, 0, utilization.gpu);
+    Store_field(ml_utilization, 1, utilization.memory);
+
+    CAMLreturn(ml_utilization);
 }
