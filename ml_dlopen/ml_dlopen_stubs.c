@@ -21,6 +21,7 @@ typedef struct nvmlInterface {
     nvmlReturn_t (*deviceGetHandleByIndex)(unsigned int, nvmlDevice_t*);
     nvmlReturn_t (*deviceGetTemperature)
         (nvmlDevice_t, nvmlTemperatureSensors_t, unsigned int*);
+    nvmlReturn_t (*deviceGetPowerUsage)(nvmlDevice_t, unsigned int*);
 } nvmlInterface;
 
 CAMLprim value stub_nvml_open(value unit) {
@@ -74,6 +75,13 @@ CAMLprim value stub_nvml_open(value unit) {
     interface->deviceGetTemperature =
         dlsym(handle, "nvmlDeviceGetTemperature");
     if(!interface->deviceGetTemperature) {
+        goto Error;
+    }
+
+    // Load nvmlDeviceGetPowerUsage.
+    interface->deviceGetPowerUsage =
+        dlsym(handle, "nvmlDeviceGetPowerUsage");
+    if(!interface->deviceGetPowerUsage) {
         goto Error;
     }
 
@@ -173,4 +181,21 @@ CAMLprim value stub_nvml_device_get_temperature(
     check_error(interface, error);
 
     CAMLreturn(Val_int(temp));
+}
+
+CAMLprim value stub_nvml_device_get_power_usage(
+        value ml_interface,
+        value ml_device) {
+    CAMLparam2(ml_interface, ml_device);
+    nvmlReturn_t error;
+    nvmlInterface* interface;
+    nvmlDevice_t device;
+    unsigned int power_usage;
+
+    interface = (nvmlInterface*)ml_interface;
+    device = *(nvmlDevice_t*)ml_device;
+    error = interface->deviceGetPowerUsage(device, &power_usage);
+    check_error(interface, error);
+
+    CAMLreturn(Val_int(power_usage));
 }

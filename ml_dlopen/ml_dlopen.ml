@@ -14,6 +14,8 @@ module Nvml = struct
 		"stub_nvml_device_get_handle_by_index"
 	external device_get_temperature: interface -> device -> int =
 		"stub_nvml_device_get_temperature"
+	external device_get_power_usage: interface -> device -> int =
+		"stub_nvml_device_get_power_usage"
 end
 
 let () =
