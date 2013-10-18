@@ -20,8 +20,7 @@ typedef struct nvmlInterface {
     nvmlReturn_t (*deviceGetCount)(unsigned int*);
 } nvmlInterface;
 
-CAMLprim value stub_nvml_open(value unit)
-{
+CAMLprim value stub_nvml_open(value unit) {
     CAMLparam1(unit);
     CAMLlocal1(ml_interface);
 
@@ -69,8 +68,7 @@ Error:
     caml_failwith(dlerror());
 }
 
-CAMLprim value stub_nvml_close(value ml_interface)
-{
+CAMLprim value stub_nvml_close(value ml_interface) {
     CAMLparam1(ml_interface);
     nvmlInterface* interface;
 
@@ -87,8 +85,7 @@ void check_error(nvmlInterface* interface, nvmlReturn_t error) {
     }
 }
 
-CAMLprim value stub_nvml_init(value ml_interface)
-{
+CAMLprim value stub_nvml_init(value ml_interface) {
     CAMLparam1(ml_interface);
     nvmlReturn_t error;
     nvmlInterface* interface;
@@ -100,8 +97,7 @@ CAMLprim value stub_nvml_init(value ml_interface)
     CAMLreturn(Val_unit);
 }
 
-CAMLprim value stub_nvml_shutdown(value ml_interface)
-{
+CAMLprim value stub_nvml_shutdown(value ml_interface) {
     CAMLparam1(ml_interface);
     nvmlReturn_t error;
     nvmlInterface* interface;
