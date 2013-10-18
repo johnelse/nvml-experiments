@@ -18,6 +18,7 @@ typedef struct nvmlInterface {
     nvmlReturn_t (*init)(void);
     nvmlReturn_t (*shutdown)(void);
     nvmlReturn_t (*deviceGetCount)(unsigned int*);
+    nvmlReturn_t (*deviceGetHandleByIndex)(unsigned int, nvmlDevice_t*);
 } nvmlInterface;
 
 CAMLprim value stub_nvml_open(value unit) {
@@ -57,6 +58,13 @@ CAMLprim value stub_nvml_open(value unit) {
     // Load nvmlDeviceGetCount.
     interface->deviceGetCount = dlsym(handle, "nvmlDeviceGetCount");
     if (!interface->deviceGetCount) {
+        goto Error;
+    }
+
+    // Load nvmlDeviceGetHandleByIndex.
+    interface->deviceGetHandleByIndex =
+        dlsym(handle, "nvmlDeviceGetHandleByIndex");
+    if(!interface->deviceGetHandleByIndex) {
         goto Error;
     }
 
@@ -120,4 +128,22 @@ CAMLprim value stub_nvml_device_get_count(value ml_interface) {
     check_error(interface, error);
 
     CAMLreturn(Val_int(count));
+}
+
+CAMLprim value stub_nvml_device_get_handle_by_index(
+        value ml_interface,
+        value ml_index) {
+    CAMLparam2(ml_interface, ml_index);
+    nvmlReturn_t error;
+    nvmlInterface* interface;
+    unsigned int index;
+    nvmlDevice_t* device;
+
+    device = malloc(sizeof(nvmlDevice_t));
+    interface = (nvmlInterface*)ml_interface;
+    index = Int_val(ml_index);
+    error = interface->deviceGetHandleByIndex(index, device);
+    check_error(interface, error);
+
+    CAMLreturn((value)device);
 }
