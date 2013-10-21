@@ -29,66 +29,64 @@ CAMLprim value stub_nvml_open(value unit) {
     CAMLparam1(unit);
     CAMLlocal1(ml_interface);
 
-    void *handle;
     nvmlInterface *interface;
 
     interface = malloc(sizeof(nvmlInterface));
 
     // Open the library.
-    handle = dlopen("libnvidia-ml.so.1", RTLD_LAZY);
-    if (!handle) {
+    interface->handle = dlopen("libnvidia-ml.so.1", RTLD_LAZY);
+    if (!interface->handle) {
         goto Error;
     }
-    interface->handle = handle;
 
     // Load nvmlErrorString.
-    interface->errorString = dlsym(handle, "nvmlErrorString");
+    interface->errorString = dlsym(interface->handle, "nvmlErrorString");
     if (!interface->errorString) {
         goto Error;
     }
 
     // Load nvmlInit.
-    interface->init = dlsym(handle, "nvmlInit");
+    interface->init = dlsym(interface->handle, "nvmlInit");
     if (!interface->init) {
         goto Error;
     }
 
     // Load nvmlShutdown.
-    interface->shutdown = dlsym(handle, "nvmlShutdown");
+    interface->shutdown = dlsym(interface->handle, "nvmlShutdown");
     if (!interface->shutdown) {
         goto Error;
     }
 
     // Load nvmlDeviceGetCount.
-    interface->deviceGetCount = dlsym(handle, "nvmlDeviceGetCount");
+    interface->deviceGetCount = dlsym(interface->handle, "nvmlDeviceGetCount");
     if (!interface->deviceGetCount) {
         goto Error;
     }
 
     // Load nvmlDeviceGetHandleByIndex.
     interface->deviceGetHandleByIndex =
-        dlsym(handle, "nvmlDeviceGetHandleByIndex");
+        dlsym(interface->handle, "nvmlDeviceGetHandleByIndex");
     if(!interface->deviceGetHandleByIndex) {
         goto Error;
     }
 
     // Load nvmlDeviceGetTemperature.
     interface->deviceGetTemperature =
-        dlsym(handle, "nvmlDeviceGetTemperature");
+        dlsym(interface->handle, "nvmlDeviceGetTemperature");
     if(!interface->deviceGetTemperature) {
         goto Error;
     }
 
     // Load nvmlDeviceGetPowerUsage.
     interface->deviceGetPowerUsage =
-        dlsym(handle, "nvmlDeviceGetPowerUsage");
+        dlsym(interface->handle, "nvmlDeviceGetPowerUsage");
     if(!interface->deviceGetPowerUsage) {
         goto Error;
     }
 
     // Load nvmlDeviceGetUtilizationRates.
     interface->deviceGetUtilizationRates =
-        dlsym(handle, "nvmlDeviceGetUtilizationRates");
+        dlsym(interface->handle, "nvmlDeviceGetUtilizationRates");
     if(!interface->deviceGetUtilizationRates) {
         goto Error;
     }
