@@ -35,7 +35,12 @@ CAMLprim value stub_nvml_open(value unit) {
     if (!interface->handle) {
         free(interface);
         exn = caml_named_value("Library_not_loaded");
-        caml_raise_with_string(*exn, dlerror());
+        if (exn) {
+            caml_raise_with_string(*exn, dlerror());
+        }
+        else {
+            caml_failwith(dlerror());
+        }
     }
 
     // Load nvmlErrorString.
@@ -96,7 +101,12 @@ CAMLprim value stub_nvml_open(value unit) {
 SymbolError:
     free(interface);
     exn = caml_named_value("Symbol_not_loaded");
-    caml_raise_with_string(*exn, dlerror());
+    if (exn) {
+        caml_raise_with_string(*exn, dlerror());
+    }
+    else {
+        caml_failwith(dlerror());
+    }
 }
 
 CAMLprim value stub_nvml_close(value ml_interface) {
