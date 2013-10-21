@@ -26,73 +26,77 @@ CAMLprim value stub_nvml_open(value unit) {
     CAMLlocal1(ml_interface);
 
     nvmlInterface *interface;
+    value *exn;
 
     interface = malloc(sizeof(nvmlInterface));
 
     // Open the library.
     interface->handle = dlopen("libnvidia-ml.so.1", RTLD_LAZY);
     if (!interface->handle) {
-        goto Error;
+        free(interface);
+        exn = caml_named_value("Library_not_loaded");
+        caml_raise_with_string(*exn, dlerror());
     }
 
     // Load nvmlErrorString.
     interface->errorString = dlsym(interface->handle, "nvmlErrorString");
     if (!interface->errorString) {
-        goto Error;
+        goto SymbolError;
     }
 
     // Load nvmlInit.
     interface->init = dlsym(interface->handle, "nvmlInit");
     if (!interface->init) {
-        goto Error;
+        goto SymbolError;
     }
 
     // Load nvmlShutdown.
     interface->shutdown = dlsym(interface->handle, "nvmlShutdown");
     if (!interface->shutdown) {
-        goto Error;
+        goto SymbolError;
     }
 
     // Load nvmlDeviceGetCount.
     interface->deviceGetCount = dlsym(interface->handle, "nvmlDeviceGetCount");
     if (!interface->deviceGetCount) {
-        goto Error;
+        goto SymbolError;
     }
 
     // Load nvmlDeviceGetHandleByIndex.
     interface->deviceGetHandleByIndex =
         dlsym(interface->handle, "nvmlDeviceGetHandleByIndex");
     if(!interface->deviceGetHandleByIndex) {
-        goto Error;
+        goto SymbolError;
     }
 
     // Load nvmlDeviceGetTemperature.
     interface->deviceGetTemperature =
         dlsym(interface->handle, "nvmlDeviceGetTemperature");
     if(!interface->deviceGetTemperature) {
-        goto Error;
+        goto SymbolError;
     }
 
     // Load nvmlDeviceGetPowerUsage.
     interface->deviceGetPowerUsage =
         dlsym(interface->handle, "nvmlDeviceGetPowerUsage");
     if(!interface->deviceGetPowerUsage) {
-        goto Error;
+        goto SymbolError;
     }
 
     // Load nvmlDeviceGetUtilizationRates.
     interface->deviceGetUtilizationRates =
         dlsym(interface->handle, "nvmlDeviceGetUtilizationRates");
     if(!interface->deviceGetUtilizationRates) {
-        goto Error;
+        goto SymbolError;
     }
 
     ml_interface = (value)interface;
     CAMLreturn(ml_interface);
 
-Error:
+SymbolError:
     free(interface);
-    caml_failwith(dlerror());
+    exn = caml_named_value("Symbol_not_loaded");
+    caml_raise_with_string(*exn, dlerror());
 }
 
 CAMLprim value stub_nvml_close(value ml_interface) {

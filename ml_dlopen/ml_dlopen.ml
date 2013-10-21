@@ -1,4 +1,12 @@
 module Nvml = struct
+	exception Library_not_loaded of string
+	exception Symbol_not_loaded of string
+
+	let () =
+		Callback.register_exception "Library_not_loaded" (Library_not_loaded "")
+	let () =
+		Callback.register_exception "Symbol_not_loaded" (Symbol_not_loaded "")
+
 	type interface
 
 	type device
