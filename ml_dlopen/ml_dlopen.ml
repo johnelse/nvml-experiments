@@ -54,7 +54,7 @@ let () =
 		let pci_info = Nvml.device_get_pci_info interface device in
 		let temp = Nvml.device_get_temperature interface device in
 		Printf.printf "bus ID = %s\n" pci_info.Nvml.bus_id;
-		Printf.printf "temperature = %dC\n" temp;
+		Printf.printf "temperature = %d°C\n" temp;
 		begin
 			try
 				let power_usage = Nvml.device_get_power_usage interface device in
