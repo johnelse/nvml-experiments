@@ -15,9 +15,9 @@ typedef struct nvmlInterface {
     nvmlReturn_t (*shutdown)(void);
     nvmlReturn_t (*deviceGetCount)(unsigned int*);
     nvmlReturn_t (*deviceGetHandleByIndex)(unsigned int, nvmlDevice_t*);
+    nvmlReturn_t (*deviceGetPowerUsage)(nvmlDevice_t, unsigned int*);
     nvmlReturn_t (*deviceGetTemperature)
         (nvmlDevice_t, nvmlTemperatureSensors_t, unsigned int*);
-    nvmlReturn_t (*deviceGetPowerUsage)(nvmlDevice_t, unsigned int*);
     nvmlReturn_t (*deviceGetUtilizationRates)(nvmlDevice_t, nvmlUtilization_t*);
 } nvmlInterface;
 
@@ -74,17 +74,17 @@ CAMLprim value stub_nvml_open(value unit) {
         goto SymbolError;
     }
 
-    // Load nvmlDeviceGetTemperature.
-    interface->deviceGetTemperature =
-        dlsym(interface->handle, "nvmlDeviceGetTemperature");
-    if(!interface->deviceGetTemperature) {
-        goto SymbolError;
-    }
-
     // Load nvmlDeviceGetPowerUsage.
     interface->deviceGetPowerUsage =
         dlsym(interface->handle, "nvmlDeviceGetPowerUsage");
     if(!interface->deviceGetPowerUsage) {
+        goto SymbolError;
+    }
+
+    // Load nvmlDeviceGetTemperature.
+    interface->deviceGetTemperature =
+        dlsym(interface->handle, "nvmlDeviceGetTemperature");
+    if(!interface->deviceGetTemperature) {
         goto SymbolError;
     }
 
@@ -181,6 +181,23 @@ CAMLprim value stub_nvml_device_get_handle_by_index(
     CAMLreturn((value)device);
 }
 
+CAMLprim value stub_nvml_device_get_power_usage(
+        value ml_interface,
+        value ml_device) {
+    CAMLparam2(ml_interface, ml_device);
+    nvmlReturn_t error;
+    nvmlInterface* interface;
+    nvmlDevice_t device;
+    unsigned int power_usage;
+
+    interface = (nvmlInterface*)ml_interface;
+    device = *(nvmlDevice_t*)ml_device;
+    error = interface->deviceGetPowerUsage(device, &power_usage);
+    check_error(interface, error);
+
+    CAMLreturn(Val_int(power_usage));
+}
+
 CAMLprim value stub_nvml_device_get_temperature(
         value ml_interface,
         value ml_device) {
@@ -197,23 +214,6 @@ CAMLprim value stub_nvml_device_get_temperature(
     check_error(interface, error);
 
     CAMLreturn(Val_int(temp));
-}
-
-CAMLprim value stub_nvml_device_get_power_usage(
-        value ml_interface,
-        value ml_device) {
-    CAMLparam2(ml_interface, ml_device);
-    nvmlReturn_t error;
-    nvmlInterface* interface;
-    nvmlDevice_t device;
-    unsigned int power_usage;
-
-    interface = (nvmlInterface*)ml_interface;
-    device = *(nvmlDevice_t*)ml_device;
-    error = interface->deviceGetPowerUsage(device, &power_usage);
-    check_error(interface, error);
-
-    CAMLreturn(Val_int(power_usage));
 }
 
 CAMLprim value stub_nvml_device_get_utilization_rates(

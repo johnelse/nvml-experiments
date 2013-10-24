@@ -25,10 +25,10 @@ module Nvml = struct
 	external device_get_count: interface -> int = "stub_nvml_device_get_count"
 	external device_get_handle_by_index: interface -> int -> device =
 		"stub_nvml_device_get_handle_by_index"
-	external device_get_temperature: interface -> device -> int =
-		"stub_nvml_device_get_temperature"
 	external device_get_power_usage: interface -> device -> int =
 		"stub_nvml_device_get_power_usage"
+	external device_get_temperature: interface -> device -> int =
+		"stub_nvml_device_get_temperature"
 	external device_get_utilization_rates: interface -> device -> utilization =
 		"stub_nvml_device_get_utilization_rates"
 end
