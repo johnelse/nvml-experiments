@@ -6,6 +6,15 @@ module Nvml = struct
 
 	type device
 
+	type pci_info = {
+		bus_id: string;
+		domain: int;
+		bus: int;
+		device: int;
+		pci_device_id: int;
+		pci_subsystem_id: int;
+	}
+
 	type utilization = {
 		gpu: int;
 		memory: int;
@@ -25,6 +34,8 @@ module Nvml = struct
 	external device_get_count: interface -> int = "stub_nvml_device_get_count"
 	external device_get_handle_by_index: interface -> int -> device =
 		"stub_nvml_device_get_handle_by_index"
+	external device_get_pci_info: interface -> device -> pci_info =
+		"stub_nvml_device_get_pci_info"
 	external device_get_power_usage: interface -> device -> int =
 		"stub_nvml_device_get_power_usage"
 	external device_get_temperature: interface -> device -> int =
