@@ -51,7 +51,9 @@ let () =
 	for index = 0 to (count - 1) do
 		Printf.printf "----- Device %d -----\n" index;
 		let device = Nvml.device_get_handle_by_index interface index in
+		let pci_info = Nvml.device_get_pci_info interface device in
 		let temp = Nvml.device_get_temperature interface device in
+		Printf.printf "bus ID = %s\n" pci_info.Nvml.bus_id;
 		Printf.printf "temperature = %dC\n" temp;
 		begin
 			try
