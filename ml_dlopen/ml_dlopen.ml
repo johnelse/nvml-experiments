@@ -54,6 +54,11 @@ let () =
 		let pci_info = Nvml.device_get_pci_info interface device in
 		let temp = Nvml.device_get_temperature interface device in
 		Printf.printf "bus ID = %s\n" pci_info.Nvml.bus_id;
+		Printf.printf "domain = %d\n" pci_info.Nvml.domain;
+		Printf.printf "bus = %d\n" pci_info.Nvml.bus;
+		Printf.printf "device = %d\n" pci_info.Nvml.device;
+		Printf.printf "PCI device ID = %d\n" pci_info.Nvml.pci_device_id;
+		Printf.printf "PCI subsystem ID = %d\n" pci_info.Nvml.pci_subsystem_id;
 		Printf.printf "temperature = %d°C\n" temp;
 		begin
 			try
