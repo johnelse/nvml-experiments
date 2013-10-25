@@ -8,11 +8,11 @@ module Nvml = struct
 
 	type pci_info = {
 		bus_id: string;
-		domain: int;
-		bus: int;
-		device: int;
-		pci_device_id: int;
-		pci_subsystem_id: int;
+		domain: int32;
+		bus: int32;
+		device: int32;
+		pci_device_id: int32;
+		pci_subsystem_id: int32;
 	}
 
 	type utilization = {
@@ -54,11 +54,11 @@ let () =
 		let pci_info = Nvml.device_get_pci_info interface device in
 		let temp = Nvml.device_get_temperature interface device in
 		Printf.printf "bus ID = %s\n" pci_info.Nvml.bus_id;
-		Printf.printf "domain = %d\n" pci_info.Nvml.domain;
-		Printf.printf "bus = %d\n" pci_info.Nvml.bus;
-		Printf.printf "device = %d\n" pci_info.Nvml.device;
-		Printf.printf "PCI device ID = %d\n" pci_info.Nvml.pci_device_id;
-		Printf.printf "PCI subsystem ID = %d\n" pci_info.Nvml.pci_subsystem_id;
+		Printf.printf "domain = 0x%04lx\n" pci_info.Nvml.domain;
+		Printf.printf "bus = 0x%02lx\n" pci_info.Nvml.bus;
+		Printf.printf "device = %ld\n" pci_info.Nvml.device;
+		Printf.printf "PCI device ID = 0x%08lx\n" pci_info.Nvml.pci_device_id;
+		Printf.printf "PCI subsystem ID = 0x%08lx\n" pci_info.Nvml.pci_subsystem_id;
 		Printf.printf "temperature = %d°C\n" temp;
 		begin
 			try
