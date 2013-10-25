@@ -224,11 +224,11 @@ CAMLprim value stub_nvml_device_get_pci_info(
 
     ml_pci_info = caml_alloc(6, 0);
     Store_field(ml_pci_info, 0, caml_copy_string(pci_info.busId));
-    Store_field(ml_pci_info, 1, pci_info.domain);
-    Store_field(ml_pci_info, 2, pci_info.bus);
-    Store_field(ml_pci_info, 3, pci_info.device);
-    Store_field(ml_pci_info, 4, pci_info.pciDeviceId);
-    Store_field(ml_pci_info, 5, pci_info.pciSubSystemId);
+    Store_field(ml_pci_info, 1, Val_int(pci_info.domain));
+    Store_field(ml_pci_info, 2, Val_int(pci_info.bus));
+    Store_field(ml_pci_info, 3, Val_int(pci_info.device));
+    Store_field(ml_pci_info, 4, Val_int(pci_info.pciDeviceId));
+    Store_field(ml_pci_info, 5, Val_int(pci_info.pciSubSystemId));
 
     CAMLreturn(ml_pci_info);
 }
