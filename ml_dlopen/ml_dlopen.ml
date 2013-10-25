@@ -6,6 +6,12 @@ module Nvml = struct
 
 	type device
 
+	type memory_info = {
+		total: int64;
+		free: int64;
+		used: int64;
+	}
+
 	type pci_info = {
 		bus_id: string;
 		domain: int32;
@@ -34,6 +40,8 @@ module Nvml = struct
 	external device_get_count: interface -> int = "stub_nvml_device_get_count"
 	external device_get_handle_by_index: interface -> int -> device =
 		"stub_nvml_device_get_handle_by_index"
+	external device_get_memory_info: interface -> device -> memory_info =
+		"stub_nvml_device_get_memory_info"
 	external device_get_pci_info: interface -> device -> pci_info =
 		"stub_nvml_device_get_pci_info"
 	external device_get_power_usage: interface -> device -> int =
@@ -51,8 +59,12 @@ let () =
 	for index = 0 to (count - 1) do
 		Printf.printf "----- Device %d -----\n" index;
 		let device = Nvml.device_get_handle_by_index interface index in
+		let memory_info = Nvml.device_get_memory_info interface device in
 		let pci_info = Nvml.device_get_pci_info interface device in
 		let temp = Nvml.device_get_temperature interface device in
+		Printf.printf "total memory = %Ld\n" memory_info.Nvml.total;
+		Printf.printf "free memory = %Ld\n" memory_info.Nvml.free;
+		Printf.printf "used memory = %Ld\n" memory_info.Nvml.used;
 		Printf.printf "bus ID = %s\n" pci_info.Nvml.bus_id;
 		Printf.printf "domain = 0x%04lx\n" pci_info.Nvml.domain;
 		Printf.printf "bus = 0x%02lx\n" pci_info.Nvml.bus;

@@ -15,6 +15,7 @@ typedef struct nvmlInterface {
     nvmlReturn_t (*shutdown)(void);
     nvmlReturn_t (*deviceGetCount)(unsigned int*);
     nvmlReturn_t (*deviceGetHandleByIndex)(unsigned int, nvmlDevice_t*);
+    nvmlReturn_t (*deviceGetMemoryInfo)(nvmlDevice_t, nvmlMemory_t*);
     nvmlReturn_t (*deviceGetPciInfo)(nvmlDevice_t, nvmlPciInfo_t*);
     nvmlReturn_t (*deviceGetPowerUsage)(nvmlDevice_t, unsigned int*);
     nvmlReturn_t (*deviceGetTemperature)
@@ -72,6 +73,13 @@ CAMLprim value stub_nvml_open(value unit) {
     interface->deviceGetHandleByIndex =
         dlsym(interface->handle, "nvmlDeviceGetHandleByIndex");
     if(!interface->deviceGetHandleByIndex) {
+        goto SymbolError;
+    }
+
+    // Load nvmlDeviceGetMemoryInfo.
+    interface->deviceGetMemoryInfo =
+        dlsym(interface->handle, "nvmlDeviceGetMemoryInfo");
+    if(!interface->deviceGetMemoryInfo) {
         goto SymbolError;
     }
 
@@ -204,6 +212,30 @@ CAMLprim value stub_nvml_device_get_power_usage(
     check_error(interface, error);
 
     CAMLreturn(Val_int(power_usage));
+}
+
+CAMLprim value stub_nvml_device_get_memory_info(
+        value ml_interface,
+        value ml_device) {
+    CAMLparam2(ml_interface, ml_device);
+    CAMLlocal1(ml_memory_info);
+    nvmlReturn_t error;
+    nvmlInterface* interface;
+    nvmlMemory_t memory_info;
+    nvmlDevice_t device;
+
+    interface = (nvmlInterface*)ml_interface;
+    device = *(nvmlDevice_t*)ml_device;
+    error =
+        interface->deviceGetMemoryInfo(device, &memory_info);
+    check_error(interface, error);
+
+    ml_memory_info = caml_alloc(3, 0);
+    Store_field(ml_memory_info, 0, caml_copy_int64(memory_info.total));
+    Store_field(ml_memory_info, 1, caml_copy_int64(memory_info.free));
+    Store_field(ml_memory_info, 2, caml_copy_int64(memory_info.used));
+
+    CAMLreturn(ml_memory_info);
 }
 
 CAMLprim value stub_nvml_device_get_pci_info(
