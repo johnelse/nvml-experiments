@@ -11,6 +11,7 @@
  * - The device's ECC mode, if supported.
  * - The device's fan speed, if supported.
  * - The device's temperature.
+ * - The device's persistence mode.
  * - The device's power usage, if supported.
  */
 
@@ -23,6 +24,7 @@ int main(int argc, char** argv) {
     unsigned int device_count, device_index, fan_speed, temp, power_usage;
     nvmlDevice_t device;
     nvmlEnableState_t current, pending;
+    nvmlEnableState_t persistence_mode;
 
     // Initialise the library.
     result = nvmlInit();
@@ -106,6 +108,20 @@ int main(int argc, char** argv) {
             else {
                 printf("Failed to get device power usage: %s\n", nvmlErrorString(result));
             };
+
+            // Get the device's persistence mode.
+            result = nvmlDeviceGetPersistenceMode(device, &persistence_mode);
+            if(NVML_SUCCESS == result) {
+                if(NVML_FEATURE_ENABLED == persistence_mode) {
+                    printf("Device has persistence mode enabled\n");
+                }
+                else {
+                    printf("Device has persistence mode disabled\n");
+                }
+            }
+            else {
+                printf("Failed to get persistence mode: %s\n", nvmlErrorString(result));
+            }
         }
         else {
             printf("Failed to get handle for device: %s\n", nvmlErrorString(result));
