@@ -7,7 +7,7 @@
  * For each device, print out:
  * - The device's index.
  * - The device's name.
- * - The devices's utilisation, if supported.
+ * - The device's utilisation, if supported.
  * - The device's ECC mode, if supported.
  * - The device's fan speed, if supported.
  * - The device's temperature.
