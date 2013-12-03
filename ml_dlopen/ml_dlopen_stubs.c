@@ -299,8 +299,8 @@ CAMLprim value stub_nvml_device_get_utilization_rates(
     check_error(interface, error);
 
     ml_utilization = caml_alloc(2, 0);
-    Store_field(ml_utilization, 0, utilization.gpu);
-    Store_field(ml_utilization, 1, utilization.memory);
+    Store_field(ml_utilization, 0, Val_int(utilization.gpu));
+    Store_field(ml_utilization, 1, Val_int(utilization.memory));
 
     CAMLreturn(ml_utilization);
 }
