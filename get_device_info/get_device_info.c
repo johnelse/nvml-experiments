@@ -7,6 +7,7 @@
  * For each device, print out:
  * - The device's index.
  * - The device's name.
+ * - The device's PCI info.
  * - The device's utilisation, if supported.
  * - The device's ECC mode, if supported.
  * - The device's fan speed, if supported.
@@ -22,7 +23,9 @@ int main(int argc, char** argv) {
     nvmlUtilization_t utilization;
     char device_name[MAX_DEVICE_NAME_LENGTH];
     unsigned int device_count, device_index, fan_speed, temp, power_usage;
+    unsigned int device_id, vendor_id, subsystem_device_id, subsystem_vendor_id;
     nvmlDevice_t device;
+    nvmlPciInfo_t pci_info;
     nvmlEnableState_t current, pending;
     nvmlEnableState_t persistence_mode;
 
@@ -56,6 +59,22 @@ int main(int argc, char** argv) {
             }
             else {
                 printf("Failed to get device name: %s\n", nvmlErrorString(result));
+            };
+
+            result = nvmlDeviceGetPciInfo(device, &pci_info);
+            if(NVML_SUCCESS == result) {
+                device_id = pci_info.pciDeviceId >> 16;
+                vendor_id = pci_info.pciDeviceId & 0xffff;
+                subsystem_device_id = pci_info.pciSubSystemId >> 16;
+                subsystem_vendor_id = pci_info.pciSubSystemId & 0xffff;
+                printf("device id = %x\n", device_id);
+                printf("vendor id = %x\n", vendor_id);
+                printf("subsystem id = %x\n", pci_info.pciSubSystemId);
+                printf("subsystem device id = %x\n", subsystem_device_id);
+                printf("subsystem vendor id = %x\n", subsystem_vendor_id);
+            }
+            else {
+                printf("Failed to get PCI info: %s\n", nvmlErrorString(result));
             };
 
             // Get the device's utilization.
