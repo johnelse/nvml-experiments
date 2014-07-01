@@ -24,11 +24,18 @@ int main(int argv, char** argc) {
     int err;
     nvmlReturn_t nvml_err;
     char *error;
+    unsigned int i;
+    unsigned int device_count;
+    nvmlDevice_t device;
+    nvmlPciInfo_t pci_info;
 
     char* (*_nvmlErrorString)(nvmlReturn_t);
     nvmlReturn_t (*_nvmlInit)(void);
     nvmlReturn_t (*_nvmlShutdown)(void);
     nvmlReturn_t (*_nvmlSystemGetDriverVersion)(char*, unsigned int);
+    nvmlReturn_t (*_nvmlDeviceGetCount)(unsigned int*);
+    nvmlReturn_t (*_nvmlDeviceGetHandleByIndex)(unsigned int, nvmlDevice_t*);
+    nvmlReturn_t (*_nvmlDeviceGetPciInfo)(nvmlDevice_t, nvmlPciInfo_t*);
 
     char driver_version[NVML_SYSTEM_NVML_VERSION_BUFFER_SIZE];
 
@@ -70,6 +77,30 @@ int main(int argv, char** argc) {
     }
     printf("Found nvmlSystemGetDriverVersion\n");
 
+    _nvmlDeviceGetCount =
+        dlsym(nvml_handle, "nvmlDeviceGetCount");
+    if((error = dlerror()) != NULL) {
+        fprintf(stderr, "%s\n", error);
+        exit(1);
+    }
+    printf("Found nvmlDeviceGetCount\n");
+
+    _nvmlDeviceGetHandleByIndex =
+        dlsym(nvml_handle, "nvmlDeviceGetHandleByIndex");
+    if((error = dlerror()) != NULL) {
+        fprintf(stderr, "%s\n", error);
+        exit(1);
+    }
+    printf("Found nvmlDeviceGetHandleByIndex\n");
+
+    _nvmlDeviceGetPciInfo =
+        dlsym(nvml_handle, "nvmlDeviceGetPciInfo");
+    if((error = dlerror()) != NULL) {
+        fprintf(stderr, "%s\n", error);
+        exit(1);
+    }
+    printf("Found nvmlDeviceGetPciInfo\n");
+
     // Initialise the library.
     nvml_err = _nvmlInit();
     if (NVML_SUCCESS != nvml_err) {
@@ -87,6 +118,37 @@ int main(int argv, char** argc) {
         exit(1);
     }
     printf("Got driver version: %s\n", driver_version);
+
+    // Query the number of installed devices.
+    nvml_err = _nvmlDeviceGetCount(&device_count);
+    if (NVML_SUCCESS != nvml_err) {
+        fprintf(stderr, "couldn't get device count: %s\n",
+                _nvmlErrorString(nvml_err));
+        exit(1);
+    }
+
+    // Attempt to query each device's PCI info.
+    for (i = 0; i < device_count; i++) {
+        nvml_err = _nvmlDeviceGetHandleByIndex(i, &device);
+        if (NVML_SUCCESS != nvml_err) {
+            fprintf(stderr, "couldn't get handle for device %d: %s\n",
+                    i, _nvmlErrorString(nvml_err));
+        }
+        else {
+            nvml_err = _nvmlDeviceGetPciInfo(device, &pci_info);
+            if (NVML_SUCCESS != nvml_err) {
+                fprintf(stderr, "couldn't get PCI info for device %d: %s\n",
+                        i, _nvmlErrorString(nvml_err));
+            }
+            else {
+                printf("%s\n", "-------------------");
+                printf("PCI info for device %d:\n", i);
+                printf("busId = %s\n", pci_info.busId);
+                printf("pciDeviceId = %x\n", pci_info.pciDeviceId);
+                printf("pciSubSystemId = %x\n", pci_info.pciSubSystemId);
+            }
+        }
+    }
 
     // Shutdown the library.
     nvml_err = _nvmlShutdown();
